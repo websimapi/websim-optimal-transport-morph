@@ -91,20 +91,9 @@ export class ParticleSystem {
     }
 
     update(dt, speed) {
-        let moved = false;
-        // Simple Lerp
-        for(let p of this.particles) {
-            const dx = p.targetX - p.x;
-            const dy = p.targetY - p.y;
-            const dist = dx*dx + dy*dy;
-            
-            if (dist > 0.1) {
-                p.x += dx * speed;
-                p.y += dy * speed;
-                moved = true;
-            }
-        }
-        return moved;
+        // Deprecated: OT advection handles movement now directly
+        // Keeping this for potential future usage or fallback
+        return false;
     }
 
     draw() {

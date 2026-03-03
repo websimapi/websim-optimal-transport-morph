@@ -51,20 +51,27 @@ export function sampleImagePoints(img, count, width, height) {
         }
     }
     
-    // Shuffle and slice to match count
+    // Shuffle
     for (let i = candidates.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
     }
     
-    // If we have fewer candidates than count, duplicate some?
-    // Or just return what we have.
-    // If we have more, slice.
-    
-    // To fill the shape well, we can repeat.
-    while (candidates.length < count && candidates.length > 0) {
-        candidates.push(...candidates); // naive filling
+    // Ensure EXACT count match
+    if (candidates.length === 0) return [];
+
+    // If we have fewer candidates than count, we must duplicate randomly to fill
+    // This prevents "deleting" particles or leaving them stranded
+    const result = [];
+    while (result.length < count) {
+        // Add chunk
+        const remaining = count - result.length;
+        if (candidates.length >= remaining) {
+            result.push(...candidates.slice(0, remaining));
+        } else {
+            result.push(...candidates);
+        }
     }
     
-    return candidates.slice(0, count);
+    return result;
 }

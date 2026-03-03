@@ -76,7 +76,7 @@ function draw(e) {
     
     // Live update particles to match drawing
     particles.initFromData(drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height));
-    requestAnimationFrame(renderLoop);
+    // renderLoop is running continuously now
 }
 
 function stopDraw() {
@@ -94,7 +94,6 @@ btnNoise.addEventListener('click', () => {
     drawCtx.clearRect(0,0,drawCanvas.width, drawCanvas.height);
     particles.initRandom();
     statusText.textContent = "Reset to random noise.";
-    requestAnimationFrame(renderLoop);
 });
 
 btnDraw.addEventListener('click', () => {
@@ -114,61 +113,54 @@ targetUpload.addEventListener('change', (e) => {
     }
 });
 
-btnMorph.addEventListener('click', async () => {
+let targetPoints = [];
+
+btnMorph.addEventListener('click', () => {
+    if (isMorphing) {
+        // Stop functionality
+        isMorphing = false;
+        btnMorph.textContent = "MORPH";
+        statusText.textContent = "Morphing paused.";
+        return;
+    }
+
     if (particles.particles.length === 0) {
         statusText.textContent = "Draw something first!";
         return;
     }
     
-    isMorphing = true;
-    statusText.textContent = "Computing Optimal Transport...";
+    // 1. Prepare Target
+    // We sample once when starting the morph.
+    statusText.textContent = "Sampling target...";
+    const pCount = particles.particles.length;
+    targetPoints = sampleImagePoints(targetPreview, pCount, canvas.width, canvas.height);
     
-    // Wait a frame to let UI update
-    await new Promise(r => requestAnimationFrame(r));
-    
-    // 1. Get Source Points
-    const sourcePoints = particles.getPoints();
-    
-    // 2. Get Target Points
-    const targetPoints = sampleImagePoints(targetPreview, sourcePoints.length, canvas.width, canvas.height);
-    
-    if (targetPoints.length === 0) {
-        statusText.textContent = "Could not sample target image.";
-        isMorphing = false;
+    if (targetPoints.length < pCount) {
+        statusText.textContent = "Could not sample enough target points.";
         return;
     }
 
-    // 3. Solve OT
-    // Run in chunks or worker ideally, but main thread for simplicity here
-    setTimeout(() => {
-        const destinations = ot.solve(sourcePoints, targetPoints);
-        
-        // 4. Assign Targets
-        particles.setTargets(destinations);
-        
-        statusText.textContent = "Morphing...";
-        animate();
-    }, 50);
+    // 2. Start Loop
+    isMorphing = true;
+    btnMorph.textContent = "PAUSE";
+    statusText.textContent = "Morphing...";
+    
+    // Switch to animate loop if not already running (renderLoop is just draw, animate handles logic)
+    // We'll merge them.
 });
 
 function renderLoop() {
-    particles.draw();
-}
-
-function animate() {
-    if (!isMorphing) return;
-    
-    const moving = particles.update(16, morphSpeed); // dt approx 16ms
-    particles.draw();
-    
-    if (moving) {
-        requestAnimationFrame(animate);
-    } else {
-        statusText.textContent = "Transformation Complete.";
-        isMorphing = false;
+    // If morphing, apply OT advection step
+    if (isMorphing) {
+        // Continuous Sliced Optimal Transport
+        // This runs every frame, gently nudging particles towards the target distribution
+        ot.advect(particles.particles, targetPoints, morphSpeed);
     }
+
+    particles.draw();
+    requestAnimationFrame(renderLoop);
 }
 
 // Init
 particles.initRandom();
-renderLoop();
+renderLoop(); // Start the loop immediately
