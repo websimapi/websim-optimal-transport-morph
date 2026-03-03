@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Optimal Transport Morph</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <div class="canvas-container">
+            <canvas id="mainCanvas"></canvas>
+            <div id="ui-overlay">
+                <div class="panel">
+                    <h1>OT Flow Field</h1>
+                    <div class="controls">
+                        <button id="btn-draw" class="active">Draw Mode</button>
+                        <button id="btn-noise">Reset / Noise</button>
+                    </div>
+                    
+                    <div class="upload-section">
+                        <label>Target Image:</label>
+                        <div class="file-input-wrapper">
+                            <button>Upload Target</button>
+                            <input type="file" id="target-upload" accept="image/*">
+                        </div>
+                        <img id="target-preview" src="target_portrait.png" alt="Target Preview">
+                    </div>
+
+                    <div class="action-section">
+                        <button id="btn-morph" class="primary">MORPH</button>
+                        <div class="slider-group">
+                            <label>Transition Speed</label>
+                            <input type="range" id="speed-slider" min="0.001" max="0.05" step="0.001" value="0.01">
+                        </div>
+                    </div>
+                    
+                    <div class="status" id="status-text">Draw something then click Morph</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
