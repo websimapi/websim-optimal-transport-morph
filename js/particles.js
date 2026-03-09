@@ -17,11 +17,9 @@ export class ParticleSystem {
             this.particles.push({
                 x: x,
                 y: y,
-                originX: x,
-                originY: y,
-                targetX: x,
-                targetY: y,
-                color: '#000000'
+                r: Math.random() * 255,
+                g: Math.random() * 255,
+                b: Math.random() * 255
             });
         }
     }
@@ -62,11 +60,9 @@ export class ParticleSystem {
                     this.particles.push({
                         x: x,
                         y: y,
-                        originX: x,
-                        originY: y,
-                        targetX: x, // Initially target is self
-                        targetY: y,
-                        color: `rgba(${r},${g},${b},${alpha/255})`
+                        r: r,
+                        g: g,
+                        b: b
                     });
                 }
             }
@@ -101,9 +97,7 @@ export class ParticleSystem {
         
         // Draw particles
         for(let p of this.particles) {
-            this.ctx.fillStyle = p.color;
-            this.ctx.beginPath();
-            // Rects are faster than arcs
+            this.ctx.fillStyle = `rgb(${p.r|0},${p.g|0},${p.b|0})`;
             this.ctx.fillRect(p.x, p.y, this.pointSize, this.pointSize);
         }
     }

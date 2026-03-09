@@ -73,6 +73,12 @@ export class OptimalTransport {
             // We scale by rate to get smooth motion over many frames
             particles[particleIdx].x += dx * diff * rate;
             particles[particleIdx].y += dy * diff * rate;
+
+            // Blend colors towards the matched target distribution point
+            const tNode = targets[i];
+            particles[particleIdx].r += (tNode.r - particles[particleIdx].r) * rate * 2;
+            particles[particleIdx].g += (tNode.g - particles[particleIdx].g) * rate * 2;
+            particles[particleIdx].b += (tNode.b - particles[particleIdx].b) * rate * 2;
         }
     }
 }

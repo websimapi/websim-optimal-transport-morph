@@ -46,7 +46,7 @@ export function sampleImagePoints(img, count, width, height) {
             const importance = (255 - brit) / 255;
             
             if (Math.random() < importance) {
-                candidates.push({x, y});
+                candidates.push({x, y, r, g, b});
             }
         }
     }

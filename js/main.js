@@ -29,6 +29,7 @@ drawCtx.lineCap = 'round';
 drawCtx.lineJoin = 'round';
 drawCtx.strokeStyle = '#000';
 drawCtx.lineWidth = 15;
+let hue = 0;
 
 // UI Elements
 const btnDraw = document.getElementById('btn-draw');
@@ -70,13 +71,16 @@ function startDraw(e) {
 function draw(e) {
     if (!isDrawing) return;
     e.preventDefault();
+    
+    drawCtx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+    hue = (hue + 2) % 360;
+
     const p = getPos(e);
     drawCtx.lineTo(p.x, p.y);
     drawCtx.stroke();
     
     // Live update particles to match drawing
     particles.initFromData(drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height));
-    // renderLoop is running continuously now
 }
 
 function stopDraw() {
